@@ -22,12 +22,12 @@ def detect_bruteforceAttack():
                 ip = match.group("ip")
                 user = match.group("user")
                 
-                if ip not in failed_attempts:
-                    failed_attempts[ip] = []
+                if ip not in failed_attempt:
+                    failed_attempt[ip] = []
                     
-                    failed_attempts[ip].append((log_time, user))
+                    failed_attempt[ip].append((log_time, user))
                     
-                    recents_attempts = [attempts for attempt in failed_attempts[ip]
+                    recents_attempts = [attempts for attempt in failed_attempt[ip]
                                         if log_time - attempt[0] <= timedelta(minutes = 2)]
                     
                     if len(recent_attempts) >= 5:
