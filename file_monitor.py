@@ -127,9 +127,3 @@ if __name__ == "__main__":
             else:
                 print(
                      " Your selection is invalid — select A, B or C")  # if user select an invalid option, this statement is printed
-log_event(
-    "File Modified",
-    "Medium",
-    file_found,
-    "File hash mismatch detected"
-)
