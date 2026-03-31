@@ -3,7 +3,7 @@
 import re
 from datetime import datetime, timedelta
 
-Log_File = " /var/log/auth.log"
+Log_File = "/var/log/auth.log"
 pattern = re.compile(r'(?P<timestamp>\w{3}\s+\d+\s[\d:]+).*Failed password for (invalid user )?(?P<user>\S+) from (?P<ip>\d+\.\d+\.\d+\.\d+)')
 
 def parse_timestamp(ts):
@@ -25,9 +25,9 @@ def detect_bruteforceAttack():
                 if ip not in failed_attempt:
                     failed_attempt[ip] = []
                     
-                    failed_attempt[ip].append((log_time, user))
+                failed_attempt[ip].append((log_time, user))
                     
-                    recents_attempts = [attempts for attempt in failed_attempt[ip]
+                    recent_attempts = [attempts for attempt in failed_attempt[ip]
                                         if log_time - attempt[0] <= timedelta(minutes = 2)]
                     
                     if len(recent_attempts) >= 5:
