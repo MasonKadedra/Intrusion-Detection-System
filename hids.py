@@ -20,16 +20,50 @@ def run_hids():
     # FILE INTEGRITY CHECK
     # --------------------------
     print("\n[Checking File Integrity...]")
-    file_checking()
+
+    result = file_checking()
+
+    # Ensure function returns values
+    if result:
+        modified, new, deleted = result
+
+        # Modified files
+        for file in modified:
+            print(f"[MODIFIED] {file}")
+            log_event("File Modified", "Medium", file, "File hash mismatch detected")
+            send_alert(f"Modified file: {file}")
+
+        # New files
+        for file in new:
+            print(f"[NEW FILE] {file}")
+            log_event("New File", "Low", file, "New file detected")
+            send_alert(f"New file: {file}")
+
+        # Deleted files
+        for file in deleted:
+            print(f"[DELETED] {file}")
+            log_event("File Deleted", "High", file, "File removed from system")
+            send_alert(f"Deleted file: {file}")
+
+    else:
+        print("[OK] No file changes detected.")
 
     # --------------------------
     # SSH BRUTE FORCE CHECK
     # --------------------------
     print("\n[Checking SSH Logs...]")
+
     alerts = detect_bruteforceAttack()
 
+    seen_ips = set()  # Prevent duplicate alerts
+
     for alert in alerts:
-        print(f"[ALERT] SSH Brute Force from {alert['ip']}")
+        if alert["ip"] in seen_ips:
+            continue
+
+        seen_ips.add(alert["ip"])
+
+        print(f"[SECURITY ALERT] SSH Brute Force detected from {alert['ip']}")
 
         # LOG EVENT
         log_event(
