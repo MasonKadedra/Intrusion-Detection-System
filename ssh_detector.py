@@ -38,4 +38,9 @@ def detect_bruteforceAttack():
                             "time": log_time.strftime("%Y-%m-%d %H:%M:%S")
                             })
     return alerts
-
+log_event(
+    "SSH Brute Force",
+    "High",
+    alert["ip"],
+    f"{alert['count']} failed login attempts"
+)
