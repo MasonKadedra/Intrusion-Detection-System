@@ -27,7 +27,7 @@ def detect_bruteforceAttack():
                     
                 failed_attempt[ip].append((log_time, user))
                     
-                    recent_attempts = [attempts for attempt in failed_attempt[ip]
+                recent_attempts = [attempt for attempt in failed_attempt[ip]
                                         if log_time - attempt[0] <= timedelta(minutes = 2)]
                     
                     if len(recent_attempts) >= 5:
@@ -38,9 +38,3 @@ def detect_bruteforceAttack():
                             "time": log_time.strftime("%Y-%m-%d %H:%M:%S")
                             })
     return alerts
-log_event(
-    "SSH Brute Force",
-    "High",
-    alert["ip"],
-    f"{alert['count']} failed login attempts"
-)
