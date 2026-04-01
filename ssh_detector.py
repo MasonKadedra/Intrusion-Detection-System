@@ -3,18 +3,21 @@
 import re
 from datetime import datetime, timedelta
 
+#stores all ssh login attempts
 Log_File = "/var/log/auth.log"
 
-pattern = re.compile(
-    r'(?P<timestamp>\w{3}\s+\d+\s[\d:]+).*Failed password for (invalid user )?(?P<user>\S+) from (?P<ip>\d+\.\d+\.\d+\.\d+)'
-)
-
+#converts timestamp string from log file into a date/time object for comparison
 def parse_timestamp(ts):
-    return datetime.strptime(ts, "%b %d %H:%M:%S").replace(year=datetime.now().year)
+    return datetime.fromisoformat(ts)
 
 def detect_bruteforceAttack():
     failed_attempt = {}
     alerts = []
+
+    #regex pattern that searches each log line, and extracts the important data
+    pattern = re.compile(
+    r'(?P<timestamp>\d{4}-\d{2}-\d{2}T[\d:.+-]+).*Failed password for (invalid user )?(?P<user>\S+) from (?P<ip>\d+\.\d+\.\d+\.\d+)'
+)
 
     with open(Log_File, "r") as f:
         for line in f:
@@ -35,11 +38,13 @@ def detect_bruteforceAttack():
                 ]
 
                 if len(recent_attempts) >= 5:
-                    alerts.append({
-                        "ip": ip,
-                        "user": user,
-                        "count": len(recent_attempts),
-                        "time": log_time.strftime("%Y-%m-%d %H:%M:%S")
-                    })
+                    # Prevent duplicate alerts per IP
+                    if not any(a['ip'] == ip for a in alerts):
+                        alerts.append({
+                            "ip": ip,
+                            "user": user,
+                            "count": len(recent_attempts),
+                            "time": log_time.strftime("%Y-%m-%d %H:%M:%S")
+                        })
 
     return alerts
